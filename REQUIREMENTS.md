@@ -28,7 +28,9 @@ Can be packaged and shared - others can clone this directory and run it.
 - When an item is marked complete, move it from its quadrant to the `done` array
 - Record `completed` date and `from` (original quadrant)
 - UI: Show a collapsible "✅ Done" section below the matrix
-- Completion can be triggered by clicking the dot/checkbox on each item
+- Each item has a dedicated ✓ button (right side) to mark complete - NOT the dot (dot is decoration only)
+- **Restore from done**: clicking the dot in the done section restores the item to its original quadrant
+- Hover on done item dot shows ↩ icon and orange highlight as visual cue
 
 ### 3. Backend API (serve.mjs)
 - `GET /todo-matrix.json` - serve the JSON (existing behavior via static file)
@@ -54,4 +56,7 @@ Keep the current E2 Unified Squircle favicon (already in index.html).
 - Keep the language toggle (zh/en)
 - Keep responsive layout (mobile: single column, desktop: 2x2 grid)
 - Desktop quadrant order: Q2(top-left) Q1(top-right) Q4(bottom-left) Q3(bottom-right)
-- Mobile order: Q1, Q2, Q3, Q4
+- Mobile order: Q1(重要紧急 first), Q2, Q3, Q4
+- Quadrant height: auto (each row fits its content, not equal height)
+- Responsive breakpoint: 820px (below = single column, above = 2x2 grid)
+- On window resize crossing the 820px threshold, automatically re-render with correct order (no manual refresh needed)
