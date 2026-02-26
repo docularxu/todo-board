@@ -1,0 +1,36 @@
+{
+  "lang": {
+    "zh": { "q1_label": "重要且紧急 🔥", "q1_action": "立刻做", "q2_label": "重要不紧急 📅", "q2_action": "排时间做", "q3_label": "不重要但紧急 👋", "q3_action": "委派或快速处理", "q4_label": "不重要不紧急 🗑️", "q4_action": "少做或不做" },
+    "en": { "q1_label": "Urgent & Important 🔥", "q1_action": "Do First", "q2_label": "Important, Not Urgent 📅", "q2_action": "Schedule", "q3_label": "Urgent, Not Important 👋", "q3_action": "Delegate", "q4_label": "Not Urgent, Not Important 🗑️", "q4_action": "Eliminate" }
+  },
+  "q1": {
+    "items": [
+      {"id": 4, "text": "RVI Advocator 申请（截止 4月30日，逾期丧失资格）：① 写公众号文章(RVA23) → ② 张健群里转发积攒人气 → ③ 召集线上会议", "text_en": "RVI Advocator application (deadline Apr 30): ① Write WeChat article (RVA23) → ② Share in Zhang Jian's group → ③ Organize online meeting", "added": "2026-02-23", "deadline": "2026-04-30", "related": [1]},
+      {"id": 6, "text": "进迭时空（SpacemiT）项目持续跟踪 - K3 Kernel Upstream + K1 U-Boot Upstream。详细状态见 memory/k1-uboot-upstreaming.md", "text_en": "SpacemiT project tracking - K3 Kernel Upstream + K1 U-Boot Upstream. Details: memory/k1-uboot-upstreaming.md", "added": "2026-02-23", "updated": "2026-02-25"},
+      {"id": 7, "text": "阿里巴巴项目商务跟踪", "text_en": "Alibaba project business tracking", "added": "2026-02-23"},
+      {"id": 13, "text": "华为计算商务机会：给熊博微信，引见 Joe Bates 及团队", "text_en": "Huawei Computing biz opportunity: WeChat Xiong Bo, introduce Joe Bates & team", "added": "2026-02-25"},
+      {"id": 14, "text": "Canonical 面试准备 - Linux Kernel Engineer (Ubuntu)，2月26日 10:00-11:00 北京时间，面试官 Brett Grandbois，Google Meet: https://meet.google.com/cnw-afhb-bde", "text_en": "Canonical interview prep - Linux Kernel Engineer (Ubuntu), Feb 26 10:00-11:00 CST, interviewer Brett Grandbois", "added": "2026-02-25", "deadline": "2026-02-26"},
+      {"id": 17, "text": "⚡回复 Andrew Jones 2月24日对你5封 review comments 的回信：① Patch 04/11 Add B to hwcap ② Patch 06/11 Ziccamoa/Ziccif/Ziccrse ③ Patch 07/11 Export have_user_pmlen* ④ Patch 08/11 hwprobe rva23u64 base ⑤ Patch 10/11 /proc/cpuinfo rva23 bases", "text_en": "⚡Reply to Andrew Jones' Feb 24 responses to all 5 review comments: patches 04, 06, 07, 08, 10 of his rva23u64 series", "added": "2026-02-25"},
+      {"id": 16, "text": "⚡最重要：RVI Europe Summit 投稿 - 主题：RVA23 在 Linux Kernel 的落地情况（与公众号文章 #1 同主题）。截止 3月9日 AOE。Non-blind，2页 extended abstract。提交：https://cfp.riscv-europe.org/eu-summit-2026/cfp CFP页面：https://riscv-europe.org/summit/2026/call-for-contrib", "text_en": "⚡TOP PRIORITY: RVI Europe Summit CFP - RVA23 landing in Linux Kernel. Deadline Mar 9 AOE. Non-blind, 2-page extended abstract. Submit: https://cfp.riscv-europe.org/eu-summit-2026/cfp", "added": "2026-02-25", "deadline": "2026-03-09"},
+      {"id": 1, "text": "写微信公众号文章 - RVA23 在 Linux Kernel 的支持情况总结与演进（#4 的第一步）", "text_en": "Write WeChat article - RVA23 Linux Kernel support summary & evolution (step 1 of #4)", "added": "2026-02-23"}
+    ]
+  },
+  "q2": {
+    "items": [
+      {"id": 5, "text": "学习研究 BMAD-METHOD 项目 - AI驱动敏捷开发框架 https://github.com/bmad-code-org/BMAD-METHOD", "text_en": "Study BMAD-METHOD project - AI-driven agile dev framework https://github.com/bmad-code-org/BMAD-METHOD", "added": "2026-02-23"},
+      {"id": 8, "text": "重新拾起 GitHub 上 Python 量化策略项目 - 之前因时间不够搁置了", "text_en": "Resume Python quant trading strategy project on GitHub - shelved due to time constraints", "added": "2026-02-23"},
+      {"id": 10, "text": "给家人部署 OpenClaw（飞书+多实例方案）：① 飞书开放平台创建3个bot应用 ② 老婆和女儿注册飞书账号 ③ 部署3个独立gateway（端口18790/91/92），共用Anthropic API key。详细方案见 memory/2026-02-24-family-openclaw-plan.md", "text_en": "Deploy OpenClaw for family (Feishu + multi-instance): ① Create 3 bot apps on Feishu Open Platform ② Register Feishu accounts for wife & daughters ③ Deploy 3 independent gateways (ports 18790/91/92). Full plan: memory/2026-02-24-family-openclaw-plan.md", "added": "2026-02-24"},
+      {"id": 11, "text": "学习并体验多 Agent 系统，搭建一个多 Agent 协作的原型", "text_en": "Learn and experience multi-agent systems, build a multi-agent collaboration prototype", "added": "2026-02-24"},
+      {"id": 15, "text": "MBP 代理清理：① ~/.zshrc 删 HTTPS_PROXY 硬编码 ② Ubuntu VM ~/.bashrc 删 HTTPS_PROXY ③ VS Code settings.json 删 http.proxy ④ 两边加 proxy-on/proxy-off alias ⑤ 重启 VS Code", "text_en": "MBP proxy cleanup: remove hardcoded HTTPS_PROXY from ~/.zshrc & VM ~/.bashrc, remove http.proxy from VS Code settings, add proxy-on/off aliases, restart VS Code", "added": "2026-02-25"}
+    ]
+  },
+  "q3": {
+    "items": [
+      {"id": 3, "text": "填写公司报销 - 2025年下半年至今", "text_en": "Submit company expense reports - H2 2025 to present", "added": "2026-02-23"}
+    ]
+  },
+  "q4": {
+    "items": []
+  },
+  "done": []
+}

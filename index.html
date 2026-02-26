@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jarvis · 四象限 TODO</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3CclipPath id='c'%3E%3Crect width='32' height='32' rx='10'/%3E%3C/clipPath%3E%3Cg clip-path='url(%23c)'%3E%3Crect x='0' y='0' width='16' height='16' fill='%23FF3B30'/%3E%3Crect x='16' y='0' width='16' height='16' fill='%23007AFF'/%3E%3Crect x='0' y='16' width='16' height='16' fill='%23FF9500'/%3E%3Crect x='16' y='16' width='16' height='16' fill='%23AF52DE'/%3E%3C/g%3E%3Cpath d='M7 16 L13 22 L25 9' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
+<style>
+:root {
+  --text-main: #1C1C1E;
+  --glass-q1-rose: rgba(255, 59, 48, 0.15);
+  --glass-q2-blue: rgba(0, 122, 255, 0.15);
+  --glass-q3-orange: rgba(255, 149, 0, 0.15);
+  --glass-q4-purple: rgba(175, 82, 222, 0.15);
+  --accent-q1: #FF3B30;
+  --accent-q2: #007AFF;
+  --accent-q3: #FF9500;
+  --accent-q4: #AF52DE;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  min-height: 100vh;
+  background: radial-gradient(circle at 0% 0%, #FFF0F5 0%, transparent 50%),
+              radial-gradient(circle at 100% 100%, #E6F0FA 0%, transparent 50%),
+              radial-gradient(circle at 100% 0%, #FFF3E0 0%, transparent 50%),
+              radial-gradient(circle at 0% 100%, #F4EEFF 0%, transparent 50%),
+              #F2F2F7;
+  color: var(--text-main);
+  font-family: -apple-system, 'PingFang SC', BlinkMacSystemFont, sans-serif;
+  padding: 20px;
+}
+h1 { text-align: center; font-size: 24px; margin-bottom: 6px; color: var(--text-main); }
+.subtitle { text-align: center; color: #8E8E93; font-size: 13px; margin-bottom: 20px; }
+.axes { max-width: 800px; margin: 0 auto; display: flex; justify-content: space-between; padding: 0 4px; }
+.axis-label { font-size: 11px; color: #8E8E93; margin-bottom: 6px; }
+.matrix { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto auto; gap: 16px; max-width: 800px; margin: 0 auto; }
+@media (max-width: 820px) {
+  .matrix { grid-template-columns: 1fr; grid-template-rows: auto; min-height: auto; gap: 12px; }
+  .quadrant { min-height: auto; }
+  .axes { display: none; }
+}
+.quadrant {
+  border-radius: 24px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04),
+              inset 0 1px 1px rgba(255, 255, 255, 0.9),
+              inset 0 -1px 1px rgba(255, 255, 255, 0.2);
+  transition: box-shadow 0.2s;
+}
+.quadrant.drag-over {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08),
+              inset 0 1px 1px rgba(255, 255, 255, 0.9),
+              inset 0 -1px 1px rgba(255, 255, 255, 0.2),
+              0 0 0 2px rgba(0, 122, 255, 0.4);
+}
+.q1 { background: var(--glass-q1-rose); }
+.q2 { background: var(--glass-q2-blue); }
+.q3 { background: var(--glass-q3-orange); }
+.q4 { background: var(--glass-q4-purple); }
+.q-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+.q-title { font-size: 16px; font-weight: bold; }
+.q1 .q-title { color: var(--accent-q1); }
+.q2 .q-title { color: var(--accent-q2); }
+.q3 .q-title { color: var(--accent-q3); }
+.q4 .q-title { color: var(--accent-q4); }
+.q-action { font-size: 12px; color: #8E8E93; background: rgba(0,0,0,0.05); padding: 2px 8px; border-radius: 10px; }
+.q-items { flex: 1; min-height: 40px; }
+.item {
+  background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.3) 100%);
+  border: 1px solid rgba(255,255,255,0.4);
+  border-top: 1px solid rgba(255,255,255,0.9);
+  border-radius: 14px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(28,28,30,0.85);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.03), inset 0 1px 2px rgba(255,255,255,0.6);
+  cursor: grab;
+  user-select: none;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.item.dragging { opacity: 0.4; transform: scale(0.97); }
+.item-dot {
+  flex-shrink: 0; width: 18px; height: 18px; border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.1) 100%);
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: inset 0 2px 4px rgba(255,255,255,1), 0 2px 4px rgba(0,0,0,0.04);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.item-dot:hover {
+  transform: scale(1.2);
+  box-shadow: inset 0 2px 4px rgba(255,255,255,1), 0 2px 8px rgba(0,0,0,0.1);
+}
+.q1 .item-dot { border-color: rgba(255,59,48,0.3); background: linear-gradient(135deg, rgba(255,59,48,0.15) 0%, rgba(255,255,255,0.2) 100%); }
+.q2 .item-dot { border-color: rgba(0,122,255,0.3); background: linear-gradient(135deg, rgba(0,122,255,0.15) 0%, rgba(255,255,255,0.2) 100%); }
+.q3 .item-dot { border-color: rgba(255,149,0,0.3); background: linear-gradient(135deg, rgba(255,149,0,0.15) 0%, rgba(255,255,255,0.2) 100%); }
+.q4 .item-dot { border-color: rgba(175,82,222,0.3); background: linear-gradient(135deg, rgba(175,82,222,0.15) 0%, rgba(255,255,255,0.2) 100%); }
+.item-text { flex: 1; overflow-wrap: break-word; word-break: break-all; }
+.item-date { font-size: 11px; color: #8E8E93; margin-top: 2px; font-weight: 400; letter-spacing: 0; }
+.empty { color: #C7C7CC; font-size: 13px; font-style: italic; padding: 10px; }
+.updated { text-align: center; color: #8E8E93; font-size: 11px; margin-top: 12px; }
+.drop-indicator {
+  height: 3px;
+  background: rgba(0, 122, 255, 0.5);
+  border-radius: 2px;
+  margin: 2px 0;
+  transition: opacity 0.15s;
+}
+
+/* Done section */
+.done-btn {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid rgba(52,199,89,0.4);
+  background: linear-gradient(135deg, rgba(52,199,89,0.08) 0%, rgba(255,255,255,0.2) 100%);
+  color: rgba(52,199,89,0.5);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  align-self: flex-end;
+}
+.done-btn:hover {
+  background: linear-gradient(135deg, rgba(52,199,89,0.3) 0%, rgba(52,199,89,0.15) 100%);
+  border-color: #34C759;
+  color: #34C759;
+  transform: scale(1.15);
+  box-shadow: 0 2px 8px rgba(52,199,89,0.3);
+}
+.done-section {
+  max-width: 800px;
+  margin: 24px auto 0;
+}
+.done-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.2) 100%);
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 16px;
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+  user-select: none;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+.done-toggle:hover { background: linear-gradient(135deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.3) 100%); }
+.done-chevron {
+  display: inline-block;
+  transition: transform 0.2s;
+  font-size: 12px;
+  color: #8E8E93;
+}
+.done-chevron.open { transform: rotate(90deg); }
+.done-count {
+  font-size: 12px;
+  color: #8E8E93;
+  font-weight: 400;
+  margin-left: auto;
+}
+.done-list {
+  margin-top: 8px;
+  display: none;
+}
+.done-list.open { display: block; }
+.done-item {
+  background: linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.2) 100%);
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 14px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(28,28,30,0.45);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  text-decoration: line-through;
+}
+.done-item .item-dot {
+  background: linear-gradient(135deg, rgba(52,199,89,0.3) 0%, rgba(255,255,255,0.2) 100%);
+  border-color: rgba(52,199,89,0.4);
+  position: relative;
+}
+.done-item .item-dot:hover {
+  background: linear-gradient(135deg, rgba(255,149,0,0.4) 0%, rgba(255,255,255,0.3) 100%) !important;
+  border-color: rgba(255,149,0,0.6) !important;
+  transform: scale(1.15);
+  transition: all 0.15s;
+}
+.done-item .item-dot:hover::after {
+  content: '↩' !important;
+  color: #FF9500 !important;
+}
+.done-item .item-dot::after {
+  content: '✓';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 11px;
+  color: #34C759;
+  font-weight: 700;
+}
+.done-item .item-date { color: #C7C7CC; }
+.done-from {
+  font-size: 10px;
+  color: #C7C7CC;
+  background: rgba(0,0,0,0.04);
+  padding: 1px 6px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+</style>
+</head><body>
+<div style="display:flex;justify-content:center;align-items:center;gap:12px;margin-bottom:8px">
+  <h1 style="margin:0" id="title">📋 四象限 TODO 看板</h1>
+  <div id="langSwitch" style="
+    display: flex;
+    background: linear-gradient(135deg, rgba(255,255,255,0.5), rgba(255,255,255,0.2));
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: 20px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  ">
+    <button id="btnZh" onclick="setLang('zh')" style="
+      padding: 4px 14px; font-size: 13px; font-weight: 600; border: none; cursor: pointer;
+      border-radius: 20px; transition: all 0.2s;
+      background: #007AFF; color: #fff;
+    ">中文</button>
+    <button id="btnEn" onclick="setLang('en')" style="
+      padding: 4px 14px; font-size: 13px; font-weight: 600; border: none; cursor: pointer;
+      border-radius: 20px; transition: all 0.2s;
+      background: transparent; color: #8E8E93;
+    ">EN</button>
+  </div>
+</div>
+<p class="subtitle" id="subtitle">艾森豪威尔矩阵 · Eisenhower Matrix</p>
+<div class="axes">
+  <span class="axis-label">⬆ 重要</span>
+  <span class="axis-label">紧急 ➡</span>
+</div>
+<div class="matrix" id="matrix"></div>
+<div class="done-section" id="doneSection"></div>
+<p class="updated" id="updated"></p>
+
+<script>
+const DESKTOP_ORDER = ['q2','q1','q4','q3'];
+const MOBILE_ORDER = ['q1','q2','q3','q4'];
+function getOrder() { return window.innerWidth <= 820 ? MOBILE_ORDER : DESKTOP_ORDER; }
+const CLASSES = {q1:'q1',q2:'q2',q3:'q3',q4:'q4'};
+const Q_LABELS_ZH = {q1:'重要且紧急', q2:'重要不紧急', q3:'不重要但紧急', q4:'不重要不紧急'};
+const Q_LABELS_EN = {q1:'Urgent & Important', q2:'Important, Not Urgent', q3:'Urgent, Not Important', q4:'Not Urgent/Important'};
+let currentLang = 'zh';
+let cachedData = null;
+let doneOpen = false;
+
+/* --- Drag state --- */
+let dragItemId = null;
+let dragFromQ = null;
+
+function setLang(lang) {
+  currentLang = lang;
+  document.getElementById('btnZh').style.background = lang === 'zh' ? '#007AFF' : 'transparent';
+  document.getElementById('btnZh').style.color = lang === 'zh' ? '#fff' : '#8E8E93';
+  document.getElementById('btnEn').style.background = lang === 'en' ? '#007AFF' : 'transparent';
+  document.getElementById('btnEn').style.color = lang === 'en' ? '#fff' : '#8E8E93';
+  document.getElementById('title').textContent = lang === 'zh' ? '📋 四象限 TODO 看板' : '📋 Eisenhower Matrix';
+  document.getElementById('subtitle').textContent = lang === 'zh' ? '艾森豪威尔矩阵 · Eisenhower Matrix' : 'Prioritize what matters most';
+  if (cachedData) render(cachedData);
+}
+
+/* --- Persist to server --- */
+async function save() {
+  await fetch('todo-matrix.json', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(cachedData, null, 2)
+  });
+}
+
+/* --- Mark item done --- */
+async function markDone(quadrant, itemId) {
+  const q = cachedData[quadrant];
+  const idx = q.items.findIndex(i => i.id === itemId);
+  if (idx === -1) return;
+  const item = q.items.splice(idx, 1)[0];
+  item.completed = new Date().toISOString().slice(0, 10);
+  item.from = quadrant;
+  if (!cachedData.done) cachedData.done = [];
+  cachedData.done.unshift(item);
+  await save();
+  render(cachedData);
+}
+
+/* --- Restore item from done --- */
+async function restoreItem(doneIdx) {
+  const done = cachedData.done || [];
+  if (doneIdx < 0 || doneIdx >= done.length) return;
+  const item = done.splice(doneIdx, 1)[0];
+  const targetQ = item.from || 'q2';
+  delete item.completed;
+  delete item.from;
+  cachedData[targetQ].items.unshift(item);
+  await save();
+  render(cachedData);
+}
+
+/* --- Drag & Drop helpers --- */
+function getDropIndex(container, y) {
+  const items = [...container.querySelectorAll('.item')];
+  for (let i = 0; i < items.length; i++) {
+    const rect = items[i].getBoundingClientRect();
+    if (y < rect.top + rect.height / 2) return i;
+  }
+  return items.length;
+}
+
+function clearDropIndicators() {
+  document.querySelectorAll('.drop-indicator').forEach(el => el.remove());
+  document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+}
+
+function showDropIndicator(container, y) {
+  // Remove old indicators from this container
+  container.querySelectorAll('.drop-indicator').forEach(el => el.remove());
+
+  const items = [...container.querySelectorAll('.item')];
+  const indicator = document.createElement('div');
+  indicator.className = 'drop-indicator';
+
+  const dropIdx = getDropIndex(container, y);
+  if (dropIdx < items.length) {
+    container.insertBefore(indicator, items[dropIdx]);
+  } else {
+    container.appendChild(indicator);
+  }
+}
+
+/* --- Render --- */
+function render(data) {
+  const langData = data.lang[currentLang];
+  const matrix = document.getElementById('matrix');
+  matrix.innerHTML = '';
+
+  for (const key of getOrder()) {
+    const q = data[key];
+    const label = langData[key + '_label'];
+    const action = langData[key + '_action'];
+    const div = document.createElement('div');
+    div.className = 'quadrant ' + CLASSES[key];
+    div.dataset.quadrant = key;
+
+    const header = document.createElement('div');
+    header.className = 'q-header';
+    header.innerHTML = '<span class="q-title">' + label + '</span><span class="q-action">' + action + '</span>';
+    div.appendChild(header);
+
+    const itemsContainer = document.createElement('div');
+    itemsContainer.className = 'q-items';
+    itemsContainer.dataset.quadrant = key;
+
+    const emptyText = currentLang === 'zh' ? '暂无事项 ✨' : 'Nothing here ✨';
+    if (q.items.length === 0) {
+      itemsContainer.innerHTML = '<div class="empty">' + emptyText + '</div>';
+    } else {
+      for (const item of q.items) {
+        const text = currentLang === 'en' && item.text_en ? item.text_en : item.text;
+        const el = document.createElement('div');
+        el.className = 'item';
+        el.draggable = true;
+        el.dataset.id = item.id;
+        el.dataset.quadrant = key;
+
+        const dot = document.createElement('div');
+        dot.className = 'item-dot';
+
+        const content = document.createElement('div');
+        content.style.flex = '1';
+        content.style.minWidth = '0';
+        content.innerHTML = '<div class="item-text">' + escapeHtml(text) + '</div><div class="item-date">' + item.added + '</div>';
+
+        const doneBtn = document.createElement('button');
+        doneBtn.className = 'done-btn';
+        doneBtn.title = currentLang === 'zh' ? '标记完成' : 'Mark done';
+        doneBtn.textContent = '✓';
+        doneBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          markDone(key, item.id);
+        });
+
+        el.appendChild(dot);
+        el.appendChild(content);
+        el.appendChild(doneBtn);
+
+        // Drag events on item
+        el.addEventListener('dragstart', (e) => {
+          dragItemId = item.id;
+          dragFromQ = key;
+          el.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', item.id);
+        });
+        el.addEventListener('dragend', () => {
+          el.classList.remove('dragging');
+          dragItemId = null;
+          dragFromQ = null;
+          clearDropIndicators();
+        });
+
+        itemsContainer.appendChild(el);
+      }
+    }
+
+    // Drop zone events on the items container
+    itemsContainer.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      div.classList.add('drag-over');
+      showDropIndicator(itemsContainer, e.clientY);
+    });
+    itemsContainer.addEventListener('dragleave', (e) => {
+      // Only remove if actually leaving the container
+      if (!itemsContainer.contains(e.relatedTarget)) {
+        div.classList.remove('drag-over');
+        itemsContainer.querySelectorAll('.drop-indicator').forEach(el => el.remove());
+      }
+    });
+    itemsContainer.addEventListener('drop', (e) => {
+      e.preventDefault();
+      clearDropIndicators();
+      if (dragItemId == null || dragFromQ == null) return;
+
+      const targetQ = key;
+      const dropIdx = getDropIndex(itemsContainer, e.clientY);
+
+      // Remove from source
+      const srcItems = data[dragFromQ].items;
+      const srcIdx = srcItems.findIndex(i => i.id === dragItemId);
+      if (srcIdx === -1) return;
+      const [moved] = srcItems.splice(srcIdx, 1);
+
+      // Insert at target
+      const tgtItems = data[targetQ].items;
+      // Adjust index if same quadrant and dropping below original position
+      let insertIdx = dropIdx;
+      if (dragFromQ === targetQ && srcIdx < dropIdx) insertIdx--;
+      tgtItems.splice(Math.max(0, insertIdx), 0, moved);
+
+      save();
+      render(data);
+    });
+
+    div.appendChild(itemsContainer);
+    matrix.appendChild(div);
+  }
+
+  // Render done section
+  renderDone(data);
+
+  const updLabel = currentLang === 'zh' ? '最后更新: ' : 'Last updated: ';
+  document.getElementById('updated').textContent = updLabel + new Date().toLocaleString(currentLang === 'zh' ? 'zh-CN' : 'en-US');
+}
+
+function renderDone(data) {
+  const section = document.getElementById('doneSection');
+  const done = data.done || [];
+
+  if (done.length === 0) {
+    section.innerHTML = '';
+    return;
+  }
+
+  const toggleLabel = currentLang === 'zh' ? '✅ 已完成' : '✅ Done';
+  const countLabel = currentLang === 'zh' ? done.length + ' 项' : done.length + ' item' + (done.length > 1 ? 's' : '');
+
+  let html = '<div class="done-toggle" onclick="toggleDone()">';
+  html += '<span class="done-chevron ' + (doneOpen ? 'open' : '') + '">▶</span>';
+  html += '<span>' + toggleLabel + '</span>';
+  html += '<span class="done-count">' + countLabel + '</span>';
+  html += '</div>';
+  html += '<div class="done-list ' + (doneOpen ? 'open' : '') + '">';
+
+  for (const item of done) {
+    const text = currentLang === 'en' && item.text_en ? item.text_en : item.text;
+    const fromLabel = currentLang === 'zh'
+      ? (Q_LABELS_ZH[item.from] || item.from)
+      : (Q_LABELS_EN[item.from] || item.from);
+    const restoreTitle = currentLang === 'zh' ? '恢复到 ' + fromLabel : 'Restore to ' + fromLabel;
+    html += '<div class="done-item">';
+    html += '<div class="item-dot" onclick="restoreItem(' + done.indexOf(item) + ')" title="' + restoreTitle + '" style="cursor:pointer"></div>';
+    html += '<div style="flex:1;min-width:0"><div class="item-text">' + escapeHtml(text) + '</div>';
+    html += '<div class="item-date">' + (currentLang === 'zh' ? '完成于 ' : 'Completed ') + item.completed + '</div></div>';
+    html += '<span class="done-from">' + fromLabel + '</span>';
+    html += '</div>';
+  }
+
+  html += '</div>';
+  section.innerHTML = html;
+}
+
+function toggleDone() {
+  doneOpen = !doneOpen;
+  if (cachedData) renderDone(cachedData);
+}
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+async function load() {
+  const res = await fetch('todo-matrix.json?' + Date.now());
+  cachedData = await res.json();
+  render(cachedData);
+}
+
+load();
+setInterval(load, 30000);
+
+// Re-render on resize so quadrant order updates when crossing mobile/desktop threshold
+let lastWidth = window.innerWidth;
+window.addEventListener('resize', () => {
+  const crossed = (lastWidth <= 820) !== (window.innerWidth <= 820);
+  lastWidth = window.innerWidth;
+  if (crossed && cachedData) render(cachedData);
+});
+</script>
+</body></html>
