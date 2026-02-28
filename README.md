@@ -15,8 +15,8 @@ Custom port: `PORT=9000 node serve.mjs`
 ## Features
 
 - **4-Quadrant Eisenhower Matrix** — Q1 (Urgent & Important), Q2 (Important, Not Urgent), Q3 (Urgent, Not Important), Q4 (Not Urgent, Not Important)
-- **Drag & Drop** — Reorder items within a quadrant or move items between quadrants. Changes persist immediately.
-- **Done Archive** — Click the dot on any item to mark it complete. Completed items move to a collapsible "Done" section below the matrix.
+- **Drag & Drop** — Drag items by the ⠿ grip handle to reorder within a quadrant or move between quadrants. Card text remains selectable and copyable. Changes persist immediately.
+- **Done Archive** — Click the ✓ button on any item to mark it complete. Completed items move to a collapsible "Done" section below the matrix. Click the dot in the done section to restore.
 - **Bilingual** — Toggle between Chinese (中文) and English with a single click.
 - **Responsive** — Desktop: 2×2 grid layout. Mobile: single-column stack.
 - **Glassmorphism UI** — Apple-style frosted glass design.
