@@ -86,27 +86,33 @@ h1 { text-align: center; font-size: 24px; margin-bottom: 6px; color: var(--text-
   gap: 14px;
   align-items: center;
   box-shadow: 0 4px 16px rgba(0,0,0,0.03), inset 0 1px 2px rgba(255,255,255,0.6);
-  cursor: grab;
-  user-select: none;
+  cursor: default;
   transition: opacity 0.2s, transform 0.2s;
 }
-.item.dragging { opacity: 0.4; transform: scale(0.97); }
+.item.dragging { opacity: 0.4; transform: scale(0.97); user-select: none; }
 .item-dot {
-  flex-shrink: 0; width: 18px; height: 18px; border-radius: 50%;
-  background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.1) 100%);
+  flex-shrink: 0; width: 18px; height: 18px; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; line-height: 1; color: rgba(0,0,0,0.25);
   border: 1px solid rgba(0,0,0,0.06);
-  box-shadow: inset 0 2px 4px rgba(255,255,255,1), 0 2px 4px rgba(0,0,0,0.04);
-  cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
+  background: rgba(255,255,255,0.4);
+  cursor: grab;
+  transition: transform 0.15s, color 0.15s, background 0.15s;
 }
+.item-dot::before { content: '⠿'; }
 .item-dot:hover {
-  transform: scale(1.2);
-  box-shadow: inset 0 2px 4px rgba(255,255,255,1), 0 2px 8px rgba(0,0,0,0.1);
+  transform: scale(1.1);
+  color: rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.05);
 }
-.q1 .item-dot { border-color: rgba(255,59,48,0.3); background: linear-gradient(135deg, rgba(255,59,48,0.15) 0%, rgba(255,255,255,0.2) 100%); }
-.q2 .item-dot { border-color: rgba(0,122,255,0.3); background: linear-gradient(135deg, rgba(0,122,255,0.15) 0%, rgba(255,255,255,0.2) 100%); }
-.q3 .item-dot { border-color: rgba(255,149,0,0.3); background: linear-gradient(135deg, rgba(255,149,0,0.15) 0%, rgba(255,255,255,0.2) 100%); }
-.q4 .item-dot { border-color: rgba(175,82,222,0.3); background: linear-gradient(135deg, rgba(175,82,222,0.15) 0%, rgba(255,255,255,0.2) 100%); }
+.q1 .item-dot { color: rgba(255,59,48,0.4); }
+.q1 .item-dot:hover { color: rgba(255,59,48,0.7); }
+.q2 .item-dot { color: rgba(0,122,255,0.4); }
+.q2 .item-dot:hover { color: rgba(0,122,255,0.7); }
+.q3 .item-dot { color: rgba(255,149,0,0.4); }
+.q3 .item-dot:hover { color: rgba(255,149,0,0.7); }
+.q4 .item-dot { color: rgba(175,82,222,0.4); }
+.q4 .item-dot:hover { color: rgba(175,82,222,0.7); }
 .item-text { flex: 1; overflow-wrap: break-word; word-break: break-all; }
 .item-date { font-size: 11px; color: #8E8E93; margin-top: 2px; font-weight: 400; letter-spacing: 0; }
 .empty { color: #C7C7CC; font-size: 13px; font-style: italic; padding: 10px; }
@@ -392,12 +398,13 @@ function render(data) {
         const text = currentLang === 'en' && item.text_en ? item.text_en : item.text;
         const el = document.createElement('div');
         el.className = 'item';
-        el.draggable = true;
+        el.draggable = false;
         el.dataset.id = item.id;
         el.dataset.quadrant = key;
 
         const dot = document.createElement('div');
         dot.className = 'item-dot';
+        dot.title = currentLang === 'zh' ? '拖动排序' : 'Drag to reorder';
 
         const content = document.createElement('div');
         content.style.flex = '1';
@@ -417,6 +424,11 @@ function render(data) {
         el.appendChild(content);
         el.appendChild(doneBtn);
 
+        // Enable drag only from the dot handle (so text is selectable)
+        dot.addEventListener('mousedown', () => { el.draggable = true; });
+        dot.addEventListener('mouseup', () => { el.draggable = false; });
+        dot.style.cursor = 'grab';
+
         // Drag events on item
         el.addEventListener('dragstart', (e) => {
           dragItemId = item.id;
@@ -427,6 +439,7 @@ function render(data) {
         });
         el.addEventListener('dragend', () => {
           el.classList.remove('dragging');
+          el.draggable = false;
           dragItemId = null;
           dragFromQ = null;
           clearDropIndicators();

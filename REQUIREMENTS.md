@@ -17,6 +17,10 @@ Can be packaged and shared - others can clone this directory and run it.
 - Drag & drop changes persist immediately to `todo-matrix.json` via API
 - Changes apply to both zh and en views (they share the same JSON data)
 - Use HTML5 Drag & Drop API (no external libraries)
+- Drag handle: items are dragged by a dedicated grip handle (⠿ icon) on the left side, NOT the entire card
+- Card text is selectable and copyable (user-select enabled on card body)
+- The grip handle shows `cursor: grab` and a tooltip ("拖动排序" / "Drag to reorder")
+- Card `draggable` attribute is only enabled on mousedown of the grip handle, and reset on dragend/mouseup
 
 ### 2. Done Archive
 - Add a `done` array to `todo-matrix.json`:
