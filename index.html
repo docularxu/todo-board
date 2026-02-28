@@ -84,20 +84,22 @@ h1 { text-align: center; font-size: 24px; margin-bottom: 6px; color: var(--text-
   letter-spacing: -0.015em;
   display: flex;
   gap: 14px;
-  align-items: center;
+  align-items: stretch;
   box-shadow: 0 4px 16px rgba(0,0,0,0.03), inset 0 1px 2px rgba(255,255,255,0.6);
   cursor: default;
   transition: opacity 0.2s, transform 0.2s;
 }
 .item.dragging { opacity: 0.4; transform: scale(0.97); user-select: none; }
 .item-dot {
-  flex-shrink: 0; width: 18px; height: 18px; border-radius: 4px;
+  flex-shrink: 0; width: 36px; min-height: 36px; border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 14px; line-height: 1; color: rgba(0,0,0,0.25);
+  font-size: 18px; line-height: 1; color: rgba(0,0,0,0.25);
   border: 1px solid rgba(0,0,0,0.06);
   background: rgba(255,255,255,0.4);
   cursor: grab;
   transition: transform 0.15s, color 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
 }
 .item-dot::before { content: '⠿'; }
 .item-dot:hover {
@@ -128,8 +130,8 @@ h1 { text-align: center; font-size: 24px; margin-bottom: 6px; color: var(--text-
 /* Done section */
 .done-btn {
   flex-shrink: 0;
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  min-height: 36px;
   border-radius: 50%;
   border: 2px solid rgba(52,199,89,0.4);
   background: linear-gradient(135deg, rgba(52,199,89,0.08) 0%, rgba(255,255,255,0.2) 100%);
@@ -309,6 +311,15 @@ async function save() {
   });
 }
 
+/* --- Notify helper (fire-and-forget) --- */
+function notify(body) {
+  fetch('/api/notify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  }).catch(() => {});
+}
+
 /* --- Mark item done --- */
 async function markDone(quadrant, itemId) {
   const q = cachedData[quadrant];
@@ -320,6 +331,7 @@ async function markDone(quadrant, itemId) {
   if (!cachedData.done) cachedData.done = [];
   cachedData.done.unshift(item);
   await save();
+  notify({ action: 'done', id: item.id, text: item.text });
   render(cachedData);
 }
 
@@ -333,6 +345,7 @@ async function restoreItem(doneIdx) {
   delete item.from;
   cachedData[targetQ].items.unshift(item);
   await save();
+  notify({ action: 'restore', id: item.id, text: item.text, to: targetQ });
   render(cachedData);
 }
 
@@ -485,6 +498,9 @@ function render(data) {
       tgtItems.splice(Math.max(0, insertIdx), 0, moved);
 
       save();
+      if (dragFromQ !== targetQ) {
+        notify({ action: 'move', id: moved.id, text: moved.text, from: dragFromQ, to: targetQ });
+      }
       render(data);
     });
 

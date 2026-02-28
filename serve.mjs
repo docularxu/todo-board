@@ -1,9 +1,52 @@
 import { createServer } from 'node:http';
 import { readFile, writeFile } from 'node:fs/promises';
 import { join, extname } from 'node:path';
+import https from 'node:https';
 
 const PORT = process.env.PORT || 8900;
 const DIR = new URL('.', import.meta.url).pathname;
+
+/* --- Telegram notification --- */
+const TG_BOT_TOKEN = '8575995737:AAGn9zJ9SAqn7a-9PSSddwJBzKb8IZTHh44';
+const TG_CHAT_ID = '-1003807343796';
+const Q_NAMES = { q1: '重要紧急', q2: '重要不紧急', q3: '不重要紧急', q4: '不重要不紧急' };
+
+function sendTelegram(text) {
+  const payload = JSON.stringify({ chat_id: TG_CHAT_ID, text, parse_mode: 'HTML' });
+  const req = https.request({
+    hostname: 'api.telegram.org',
+    path: `/bot${TG_BOT_TOKEN}/sendMessage`,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(payload) },
+  }, (res) => {
+    res.resume(); // drain
+    if (res.statusCode !== 200) console.error(`Telegram notify failed: ${res.statusCode}`);
+  });
+  req.on('error', (e) => console.error('Telegram notify error:', e.message));
+  req.end(payload);
+}
+
+function notifyAction(body) {
+  const { action, id, text, from, to } = body;
+  let msg;
+  switch (action) {
+    case 'done':
+      msg = `📋 看板更新：#${id}「${text}」已完成 ✅`;
+      break;
+    case 'restore':
+      msg = `📋 看板更新：#${id}「${text}」已恢复到 ${Q_NAMES[to] || to}`;
+      break;
+    case 'move':
+      msg = `📋 看板更新：#${id}「${text}」从 ${Q_NAMES[from] || from} 移到 ${Q_NAMES[to] || to}`;
+      break;
+    case 'add':
+      msg = `📋 看板更新：新增 #${id}「${text}」到 ${Q_NAMES[to] || to}`;
+      break;
+    default:
+      return;
+  }
+  sendTelegram(msg);
+}
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -19,12 +62,27 @@ const MIME = {
 const server = createServer(async (req, res) => {
   // CORS headers for local dev
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
     res.writeHead(204);
     return res.end();
+  }
+
+  // POST /api/notify
+  if (req.method === 'POST' && req.url.split('?')[0] === '/api/notify') {
+    const chunks = [];
+    for await (const chunk of req) chunks.push(chunk);
+    try {
+      const body = JSON.parse(Buffer.concat(chunks).toString());
+      notifyAction(body);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ ok: true }));
+    } catch {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ error: 'Invalid JSON' }));
+    }
   }
 
   // PUT /todo-matrix.json

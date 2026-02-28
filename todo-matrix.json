@@ -24,16 +24,14 @@
   "q1": {
     "items": [
       {
-        "id": 17,
-        "text": "⚡回复 Andrew Jones 2月24日对你5封 review comments 的回信：① Patch 04/11 Add B to hwcap ② Patch 06/11 Ziccamoa/Ziccif/Ziccrse ③ Patch 07/11 Export have_user_pmlen* ④ Patch 08/11 hwprobe rva23u64 base ⑤ Patch 10/11 /proc/cpuinfo rva23 bases",
-        "text_en": "⚡Reply to Andrew Jones' Feb 24 responses to all 5 review comments: patches 04, 06, 07, 08, 10 of his rva23u64 series",
-        "added": "2026-02-25"
-      },
-      {
-        "id": 10,
-        "text": "给家人部署 OpenClaw（飞书+多实例方案）：① 飞书开放平台创建3个bot应用 ② 老婆和女儿注册飞书账号 ③ 部署3个独立gateway（端口18790/91/92），共用Anthropic API key。详细方案见 memory/2026-02-24-family-openclaw-plan.md",
-        "text_en": "Deploy OpenClaw for family (Feishu + multi-instance): ① Create 3 bot apps on Feishu Open Platform ② Register Feishu accounts for wife & daughters ③ Deploy 3 independent gateways (ports 18790/91/92). Full plan: memory/2026-02-24-family-openclaw-plan.md",
-        "added": "2026-02-24"
+        "id": 4,
+        "text": "RVI Advocator 申请（截止 4月30日，逾期丧失资格）：① 写公众号文章(RVA23) → ② 张健群里转发积攒人气 → ③ 召集线上会议",
+        "text_en": "RVI Advocator application (deadline Apr 30): ① Write WeChat article (RVA23) → ② Share in Zhang Jian's group → ③ Organize online meeting",
+        "added": "2026-02-23",
+        "deadline": "2026-04-30",
+        "related": [
+          1
+        ]
       },
       {
         "id": 16,
@@ -43,14 +41,10 @@
         "deadline": "2026-03-09"
       },
       {
-        "id": 4,
-        "text": "RVI Advocator 申请（截止 4月30日，逾期丧失资格）：① 写公众号文章(RVA23) → ② 张健群里转发积攒人气 → ③ 召集线上会议",
-        "text_en": "RVI Advocator application (deadline Apr 30): ① Write WeChat article (RVA23) → ② Share in Zhang Jian's group → ③ Organize online meeting",
-        "added": "2026-02-23",
-        "deadline": "2026-04-30",
-        "related": [
-          1
-        ]
+        "id": 17,
+        "text": "⚡回复 Andrew Jones 2月24日对你5封 review comments 的回信：① Patch 04/11 Add B to hwcap ② Patch 06/11 Ziccamoa/Ziccif/Ziccrse ③ Patch 07/11 Export have_user_pmlen* ④ Patch 08/11 hwprobe rva23u64 base ⑤ Patch 10/11 /proc/cpuinfo rva23 bases",
+        "text_en": "⚡Reply to Andrew Jones' Feb 24 responses to all 5 review comments: patches 04, 06, 07, 08, 10 of his rva23u64 series",
+        "added": "2026-02-25"
       }
     ]
   },
@@ -69,12 +63,6 @@
         "id": 8,
         "text": "重新拾起 GitHub 上 Python 量化策略项目 - 之前因时间不够搁置了",
         "text_en": "Resume Python quant trading strategy project on GitHub - shelved due to time constraints",
-        "added": "2026-02-23"
-      },
-      {
-        "id": 5,
-        "text": "学习研究 BMAD-METHOD 项目 - AI驱动敏捷开发框架 https://github.com/bmad-code-org/BMAD-METHOD",
-        "text_en": "Study BMAD-METHOD project - AI-driven agile dev framework https://github.com/bmad-code-org/BMAD-METHOD",
         "added": "2026-02-23"
       },
       {
@@ -107,6 +95,18 @@
   "q3": {
     "items": [
       {
+        "id": 24,
+        "text": "约见进迭时空 President 孙彦邦总 - 春节时说来北京，追问具体时间",
+        "text_en": "Meet SpacemiT President Sun Yanbang - mentioned visiting Beijing during Spring Festival, follow up on schedule",
+        "added": "2026-02-28"
+      },
+      {
+        "id": 23,
+        "text": "约见 Tide Yin - 下周，具体时间未定",
+        "text_en": "Meet Tide Yin - next week, exact time TBD",
+        "added": "2026-02-28"
+      },
+      {
         "id": 21,
         "text": "约见周杰（此芯科技）- 下周四晚上",
         "text_en": "Meet Zhou Jie (Cixin Tech) - next Thursday evening",
@@ -114,17 +114,17 @@
         "deadline": "2026-03-05"
       },
       {
-        "id": 3,
-        "text": "填写公司报销 - 2025年下半年至今",
-        "text_en": "Submit company expense reports - H2 2025 to present",
-        "added": "2026-02-23"
-      },
-      {
         "id": 20,
         "text": "约见许庆伟（蓝心算力）- 下周四或周五来京，具体行程待定",
         "text_en": "Meet Xu Qingwei (Lanxin Computing) - visiting Beijing next Thu or Fri, exact schedule TBD",
         "added": "2026-02-26",
         "deadline": "2026-03-06"
+      },
+      {
+        "id": 3,
+        "text": "填写公司报销 - 2025年下半年至今",
+        "text_en": "Submit company expense reports - H2 2025 to present",
+        "added": "2026-02-23"
       }
     ]
   },
@@ -132,6 +132,30 @@
     "items": []
   },
   "done": [
+    {
+      "id": 22,
+      "text": "TODO看板加 webhook 通知：前端操作（完成/新增/移动）时调 serve.mjs POST 端点，通过 Telegram Bot API 发消息到日常秘书群",
+      "text_en": "Add webhook notification to TODO board: frontend calls serve.mjs POST endpoint on actions, notify Telegram group via Bot API",
+      "added": "2026-02-28",
+      "completed": "2026-02-28",
+      "from": "q3"
+    },
+    {
+      "id": 5,
+      "text": "学习研究 BMAD-METHOD 项目 - AI驱动敏捷开发框架 https://github.com/bmad-code-org/BMAD-METHOD",
+      "text_en": "Study BMAD-METHOD project - AI-driven agile dev framework https://github.com/bmad-code-org/BMAD-METHOD",
+      "added": "2026-02-23",
+      "completed": "2026-02-28",
+      "from": "q2"
+    },
+    {
+      "id": 10,
+      "text": "给家人部署 OpenClaw（飞书+多实例方案）：① 飞书开放平台创建3个bot应用 ② 老婆和女儿注册飞书账号 ③ 部署3个独立gateway（端口18790/91/92），共用Anthropic API key。详细方案见 memory/2026-02-24-family-openclaw-plan.md",
+      "text_en": "Deploy OpenClaw for family (Feishu + multi-instance): ① Create 3 bot apps on Feishu Open Platform ② Register Feishu accounts for wife & daughters ③ Deploy 3 independent gateways (ports 18790/91/92). Full plan: memory/2026-02-24-family-openclaw-plan.md",
+      "added": "2026-02-24",
+      "completed": "2026-02-28",
+      "from": "q1"
+    },
     {
       "id": 19,
       "text": "回复 Reddit 上别人对自己帖子的评论",
